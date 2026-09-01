@@ -1,0 +1,449 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n unfold %}
+
+{% block title %}Dashboard | Imvio Admin{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+:root {
+  --glass-bg: rgba(255,255,255,0.08);
+  --glass-border: rgba(255,255,255,0.18);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.dash-wrapper { padding: 24px; background: transparent; }
+
+/* ── Glass Card ─────────────────────────────── */
+.g-card {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.g-card:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(0,0,0,0.22); }
+
+/* KPI Card gradient tops */
+.kpi-bar { height: 4px; width: 100%; border-radius: 4px 4px 0 0; }
+.kpi-inner { padding: 20px; }
+.kpi-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.kpi-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; opacity: 0.65; margin-bottom: 4px;
+}
+.kpi-value { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+.kpi-sub { font-size: 11px; opacity: 0.7; }
+
+/* gradient badges */
+.gr-indigo  { background: linear-gradient(135deg,#6366f1,#818cf8); }
+.gr-emerald { background: linear-gradient(135deg,#10b981,#34d399); }
+.gr-amber   { background: linear-gradient(135deg,#f59e0b,#fbbf24); }
+.gr-violet  { background: linear-gradient(135deg,#8b5cf6,#a78bfa); }
+.gr-orange  { background: linear-gradient(135deg,#f97316,#fb923c); }
+.gr-rose    { background: linear-gradient(135deg,#f43f5e,#fb7185); }
+.gr-sky     { background: linear-gradient(135deg,#0ea5e9,#38bdf8); }
+.gr-teal    { background: linear-gradient(135deg,#14b8a6,#2dd4bf); }
+
+/* Mini revenue cards */
+.rev-card {
+  text-align: center; padding: 20px 12px;
+  border-radius: 16px;
+}
+
+/* Chart wrapper */
+.chart-card { padding: 20px; }
+.chart-card h3 {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; opacity: 0.7; margin-bottom: 16px;
+}
+
+/* Status badge grids */
+.stat-badge {
+  text-align: center; padding: 14px 8px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.stat-badge .s-label { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
+.stat-badge .s-val   { font-size: 26px; font-weight: 800; line-height: 1.1; }
+
+/* Table */
+.g-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.g-table thead th {
+  padding: 10px 14px; text-align: left;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; opacity: 0.55;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.g-table tbody tr { transition: background 0.15s; }
+.g-table tbody tr:hover { background: rgba(255,255,255,0.05); }
+.g-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  vertical-align: middle;
+}
+
+/* Status pills */
+.pill {
+  display: inline-flex; align-items: center; padding: 3px 10px;
+  border-radius: 999px; font-size: 11px; font-weight: 600;
+}
+.pill-amber   { background: rgba(245,158,11,0.2);  color: #fbbf24; }
+.pill-emerald { background: rgba(16,185,129,0.2);  color: #34d399; }
+.pill-indigo  { background: rgba(99,102,241,0.2);  color: #818cf8; }
+.pill-rose    { background: rgba(244,63,94,0.2);   color: #fb7185; }
+.pill-sky     { background: rgba(14,165,233,0.2);  color: #38bdf8; }
+.pill-gray    { background: rgba(148,163,184,0.15);color: #94a3b8; }
+
+/* Section title */
+.section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; opacity: 0.5; margin-bottom: 14px; padding-left: 2px;
+}
+
+/* header gradient text */
+.grad-text {
+  background: linear-gradient(90deg,#818cf8,#a78bfa,#38bdf8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* grid helpers */
+.row { display: grid; gap: 16px; }
+.r4 { grid-template-columns: repeat(4, 1fr); }
+.r3 { grid-template-columns: repeat(3, 1fr); }
+.r2 { grid-template-columns: 1fr 1fr; }
+.r1 { grid-template-columns: 1fr; }
+@media(max-width:1200px){ .r4{ grid-template-columns: repeat(2,1fr); } }
+@media(max-width:768px){ .r4,.r3,.r2{ grid-template-columns: 1fr; } }
+
+.gap16 { margin-bottom: 16px; }
+.gap24 { margin-bottom: 24px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-wrapper">
+
+  {# ═══ HEADER ════════════════════════════════════════════════════════ #}
+  <div style="margin-bottom:28px;">
+    <h1 style="font-size:28px;font-weight:900;margin:0 0 4px;" class="grad-text">Imvio Dashboard</h1>
+    <p style="font-size:13px;opacity:0.5;margin:0;">Real-time overview of your platform</p>
+  </div>
+
+  {# ═══ ROW 1 – MAIN KPI ═══════════════════════════════════════════════ #}
+  <p class="section-title">Core Metrics</p>
+  <div class="row r4 gap24">
+
+    <div class="g-card">
+      <div class="kpi-bar gr-indigo"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-indigo">👥</div>
+        <div>
+          <p class="kpi-label">Total Users</p>
+          <p class="kpi-value">{{ total_users }}</p>
+          <p class="kpi-sub" style="color:#818cf8;">+{{ new_users_30d }} last 30 days</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="kpi-bar gr-emerald"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-emerald">💳</div>
+        <div>
+          <p class="kpi-label">Active Subscriptions</p>
+          <p class="kpi-value">{{ active_subscriptions }}</p>
+          <p class="kpi-sub" style="color:#34d399;">Paid subscribers</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="kpi-bar gr-amber"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-amber">💰</div>
+        <div>
+          <p class="kpi-label">Total Revenue</p>
+          <p class="kpi-value">${{ total_revenue|floatformat:0 }}</p>
+          <p class="kpi-sub" style="color:#fbbf24;">+${{ revenue_30d|floatformat:0 }} last 30d</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="kpi-bar gr-violet"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-violet">🎨</div>
+        <div>
+          <p class="kpi-label">Images Generated</p>
+          <p class="kpi-value">{{ total_images }}</p>
+          <p class="kpi-sub" style="color:#a78bfa;">{{ images_30d }} jobs last 30d</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {# ═══ ROW 2 – SECONDARY KPI ══════════════════════════════════════════ #}
+  <div class="row r4 gap24">
+
+    <div class="g-card">
+      <div class="kpi-bar gr-orange"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-orange">📦</div>
+        <div>
+          <p class="kpi-label">Print Orders</p>
+          <p class="kpi-value">{{ total_orders }}</p>
+          <p class="kpi-sub" style="color:#fb923c;">{{ pending_orders }} pending</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="kpi-bar gr-rose"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-rose">✉️</div>
+        <div>
+          <p class="kpi-label">Contact Messages</p>
+          <p class="kpi-value">{{ total_contacts }}</p>
+          <p class="kpi-sub" style="color:#fb7185;">{{ unread_contacts }} unread</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="kpi-bar gr-sky"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-sky">📰</div>
+        <div>
+          <p class="kpi-label">Newsletter Subs</p>
+          <p class="kpi-value">{{ newsletter_subs }}</p>
+          <p class="kpi-sub" style="color:#38bdf8;">Active subscribers</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="kpi-bar gr-teal"></div>
+      <div class="kpi-inner" style="display:flex;gap:14px;align-items:flex-start;">
+        <div class="kpi-icon gr-teal">🪙</div>
+        <div>
+          <p class="kpi-label">Credits in Wallets</p>
+          <p class="kpi-value">{{ total_credits_in_wallets }}</p>
+          <p class="kpi-sub" style="color:#2dd4bf;">Across all users</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {# ═══ ROW 3 – REVENUE BREAKDOWN ═══════════════════════════════════════ #}
+  <p class="section-title">Revenue Breakdown</p>
+  <div class="row r3 gap24">
+
+    <div class="g-card rev-card" style="background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(52,211,153,0.08));">
+      <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#34d399;margin:0 0 8px;">Subscription</p>
+      <p style="font-size:36px;font-weight:900;color:#34d399;margin:0 0 4px;">${{ sub_revenue|floatformat:2 }}</p>
+      <p style="font-size:11px;opacity:.5;margin:0;">All-time paid</p>
+    </div>
+
+    <div class="g-card rev-card" style="background:linear-gradient(135deg,rgba(99,102,241,0.18),rgba(129,140,248,0.08));">
+      <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#818cf8;margin:0 0 8px;">Credit Purchases</p>
+      <p style="font-size:36px;font-weight:900;color:#818cf8;margin:0 0 4px;">${{ credit_revenue|floatformat:2 }}</p>
+      <p style="font-size:11px;opacity:.5;margin:0;">All-time paid</p>
+    </div>
+
+    <div class="g-card rev-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.18),rgba(251,191,36,0.08));">
+      <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fbbf24;margin:0 0 8px;">Print Orders</p>
+      <p style="font-size:36px;font-weight:900;color:#fbbf24;margin:0 0 4px;">${{ print_revenue|floatformat:2 }}</p>
+      <p style="font-size:11px;opacity:.5;margin:0;">All-time paid</p>
+    </div>
+
+  </div>
+
+  {# ═══ ROW 4 – CHARTS ══════════════════════════════════════════════════ #}
+  <p class="section-title">Analytics</p>
+  <div class="row r2 gap24">
+
+    <div class="g-card chart-card">
+      <h3>User Registrations — Last 30 Days</h3>
+      {% component "unfold/components/chart/line.html" with component_class="UserRegistrationChartComponent" %}{% endcomponent %}
+    </div>
+
+    <div class="g-card chart-card">
+      <h3>Revenue by Type — Last 30 Days</h3>
+      {% component "unfold/components/chart/bar.html" with component_class="RevenueChartComponent" %}{% endcomponent %}
+    </div>
+
+  </div>
+
+  <div class="row r2 gap24">
+
+    <div class="g-card chart-card">
+      <h3>AI Image Jobs — Last 30 Days</h3>
+      {% component "unfold/components/chart/line.html" with component_class="ImageGenerationChartComponent" %}{% endcomponent %}
+    </div>
+
+    <div class="g-card chart-card">
+      <h3>Print Order Status Distribution</h3>
+      {% component "unfold/components/chart/bar.html" with component_class="OrderStatusChartComponent" %}{% endcomponent %}
+    </div>
+
+  </div>
+
+  {# ═══ ROW 5 – STATUS GRIDS ════════════════════════════════════════════ #}
+  <p class="section-title">Status Overview</p>
+  <div class="row r2 gap24">
+
+    <div class="g-card" style="padding:20px;">
+      <p style="font-size:12px;font-weight:700;opacity:.6;margin:0 0 14px;text-transform:uppercase;letter-spacing:.08em;">Print Order Statuses</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div class="stat-badge" style="background:rgba(245,158,11,0.12);">
+          <p class="s-label" style="color:#fbbf24;">Pending</p>
+          <p class="s-val" style="color:#fbbf24;">{{ order_status_counts.pending }}</p>
+        </div>
+        <div class="stat-badge" style="background:rgba(16,185,129,0.12);">
+          <p class="s-label" style="color:#34d399;">Paid</p>
+          <p class="s-val" style="color:#34d399;">{{ order_status_counts.paid }}</p>
+        </div>
+        <div class="stat-badge" style="background:rgba(99,102,241,0.12);">
+          <p class="s-label" style="color:#818cf8;">Sent</p>
+          <p class="s-val" style="color:#818cf8;">{{ order_status_counts.sent_to_gelato }}</p>
+        </div>
+        <div class="stat-badge" style="background:rgba(244,63,94,0.12);">
+          <p class="s-label" style="color:#fb7185;">Failed</p>
+          <p class="s-val" style="color:#fb7185;">{{ order_status_counts.failed }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card" style="padding:20px;">
+      <p style="font-size:12px;font-weight:700;opacity:.6;margin:0 0 14px;text-transform:uppercase;letter-spacing:.08em;">AI Job Statuses</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div class="stat-badge" style="background:rgba(245,158,11,0.12);">
+          <p class="s-label" style="color:#fbbf24;">Pending</p>
+          <p class="s-val" style="color:#fbbf24;">{{ job_status_counts.pending }}</p>
+        </div>
+        <div class="stat-badge" style="background:rgba(14,165,233,0.12);">
+          <p class="s-label" style="color:#38bdf8;">Processing</p>
+          <p class="s-val" style="color:#38bdf8;">{{ job_status_counts.processing }}</p>
+        </div>
+        <div class="stat-badge" style="background:rgba(16,185,129,0.12);">
+          <p class="s-label" style="color:#34d399;">Succeeded</p>
+          <p class="s-val" style="color:#34d399;">{{ job_status_counts.succeeded }}</p>
+        </div>
+        <div class="stat-badge" style="background:rgba(244,63,94,0.12);">
+          <p class="s-label" style="color:#fb7185;">Failed</p>
+          <p class="s-val" style="color:#fb7185;">{{ job_status_counts.failed }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {# ═══ ROW 6 – RECENT ORDERS TABLE ═════════════════════════════════════ #}
+  <p class="section-title">Recent Print Orders</p>
+  <div class="g-card gap24" style="overflow:hidden;">
+    {% if recent_orders %}
+    <div style="overflow-x:auto;">
+      <table class="g-table">
+        <thead>
+          <tr>
+            <th>#</th><th>User</th><th>Size</th><th>Amount</th><th>Status</th><th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in recent_orders %}
+          <tr>
+            <td style="opacity:.5;font-family:monospace;">{{ o.id }}</td>
+            <td style="font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ o.user.email }}</td>
+            <td>{{ o.product_size.display_size }}</td>
+            <td style="font-weight:700;">${{ o.amount }}</td>
+            <td>
+              {% if o.status == 'pending' %}<span class="pill pill-amber">Pending</span>
+              {% elif o.status == 'paid' %}<span class="pill pill-emerald">Paid</span>
+              {% elif o.status == 'sent_to_gelato' %}<span class="pill pill-indigo">Sent</span>
+              {% else %}<span class="pill pill-rose">Failed</span>{% endif %}
+            </td>
+            <td style="opacity:.55;font-size:12px;">{{ o.created_at|date:"M d, Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="text-align:center;opacity:.4;padding:40px 0;font-size:13px;">No print orders yet.</p>
+    {% endif %}
+  </div>
+
+  {# ═══ ROW 7 – BILLING + CONTACTS ══════════════════════════════════════ #}
+  <div class="row r2 gap24" style="padding-bottom:16px;">
+
+    <div class="g-card" style="overflow:hidden;">
+      <div style="padding:16px 20px 0;font-size:12px;font-weight:700;opacity:.6;text-transform:uppercase;letter-spacing:.08em;">Recent Billing</div>
+      {% if recent_billing %}
+      <div style="overflow-x:auto;">
+        <table class="g-table">
+          <thead><tr><th>User</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for b in recent_billing %}
+            <tr>
+              <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ b.user.email }}</td>
+              <td>
+                {% if b.billing_type == 'subscription' %}<span class="pill pill-emerald">Sub</span>
+                {% elif b.billing_type == 'credit_purchase' %}<span class="pill pill-indigo">Credits</span>
+                {% else %}<span class="pill pill-amber">Print</span>{% endif %}
+              </td>
+              <td style="font-weight:700;">${{ b.amount }}</td>
+              <td style="opacity:.55;font-size:12px;">{{ b.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p style="text-align:center;opacity:.4;padding:30px 0;font-size:13px;">No billing records.</p>
+      {% endif %}
+    </div>
+
+    <div class="g-card" style="overflow:hidden;">
+      <div style="padding:16px 20px 0;font-size:12px;font-weight:700;opacity:.6;text-transform:uppercase;letter-spacing:.08em;">Recent Contact Messages</div>
+      {% if recent_contacts %}
+      <div style="overflow-x:auto;">
+        <table class="g-table">
+          <thead><tr><th>From</th><th>Subject</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for m in recent_contacts %}
+            <tr>
+              <td>
+                <p style="font-weight:600;font-size:12px;margin:0;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.full_name }}</p>
+                <p style="opacity:.5;font-size:11px;margin:0;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.email }}</p>
+              </td>
+              <td style="font-size:12px;">{{ m.get_subject_display }}</td>
+              <td>
+                {% if m.is_read %}<span class="pill pill-gray">Read</span>
+                {% else %}<span class="pill pill-rose">Unread</span>{% endif %}
+              </td>
+              <td style="opacity:.55;font-size:12px;">{{ m.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p style="text-align:center;opacity:.4;padding:30px 0;font-size:13px;">No messages yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

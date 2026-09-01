@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Print Order Confirmed – iMVIO</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f0f2f5;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f2f5;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+          style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.10);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#0d0d0d;padding:32px 40px;text-align:center;">
+              <span style="font-size:28px;font-weight:800;letter-spacing:1px;color:#ffffff;">
+                i<span style="color:#8aff3e;">M</span>VIO
+              </span>
+              <p style="margin:6px 0 0;font-size:11px;letter-spacing:4px;color:#666666;text-transform:uppercase;">Order
+                Confirmed</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="height:3px;background:linear-gradient(90deg,#5dcc00,#8aff3e,#5dcc00);"></td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 48px 36px;text-align:center;">
+              <div
+                style="width:64px;height:64px;background:#f4fff0;border:2px solid #8aff3e;border-radius:50%;margin:0 auto 24px;line-height:64px;font-size:28px;">
+                🖨️</div>
+              <h1 style="margin:0 0 10px;font-size:22px;font-weight:700;color:#0d0d0d;">Your print is on its way!</h1>
+              <p style="margin:0 0 28px;font-size:15px;color:#555555;line-height:1.8;">
+                Hi {{ full_name }}, your print order has been confirmed and sent to production. We'll notify you once it
+                ships.
+              </p>
+
+              <!-- Order Card -->
+              <table cellpadding="0" cellspacing="0" border="0" width="100%"
+                style="background:#0d0d0d;border-radius:12px;margin-bottom:32px;overflow:hidden;">
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #1e1e1e;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-size:12px;color:#666666;text-transform:uppercase;letter-spacing:1px;">Order ID
+                        </td>
+                        <td align="right" style="font-size:13px;font-weight:600;color:#8aff3e;">#{{ order_id }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #1e1e1e;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-size:12px;color:#666666;text-transform:uppercase;letter-spacing:1px;">Product
+                        </td>
+                        <td align="right" style="font-size:13px;font-weight:600;color:#ffffff;">{{ product_name }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #1e1e1e;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-size:12px;color:#666666;text-transform:uppercase;letter-spacing:1px;">Size</td>
+                        <td align="right" style="font-size:13px;font-weight:600;color:#ffffff;">{{ size }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #1e1e1e;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-size:12px;color:#666666;text-transform:uppercase;letter-spacing:1px;">Total Paid
+                        </td>
+                        <td align="right" style="font-size:14px;font-weight:700;color:#8aff3e;">${{ amount }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-size:12px;color:#666666;text-transform:uppercase;letter-spacing:1px;">Shipping
+                          To</td>
+                        <td align="right" style="font-size:13px;font-weight:600;color:#ffffff;">{{ shipping_name
+                          }}<br />
+                          <span style="font-size:12px;color:#888888;">{{ shipping_address }}</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Status badge -->
+              <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 28px;">
+                <tr>
+                  <td
+                    style="background:#f4fff0;border:1px solid #8aff3e;border-radius:20px;padding:8px 20px;font-size:13px;color:#3a8800;font-weight:600;">
+                    🟢 &nbsp;Sent to Production
+                  </td>
+                </tr>
+              </table>
+
+              <a href="https://imvio.com.au/dashboard"
+                style="display:inline-block;background:#8aff3e;color:#0d0d0d;font-weight:700;font-size:15px;padding:14px 40px;border-radius:30px;text-decoration:none;">
+                View My Orders →
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0 48px;">
+              <div style="height:1px;background:#eeeeee;"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 48px;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;color:#999999;">Estimated delivery: 5–10 business days.</p>
+              <p style="margin:0;font-size:12px;color:#bbbbbb;">
+                © 2026 <strong style="color:#0d0d0d;">iMVIO</strong> &nbsp;·&nbsp;
+                <a href="https://imvio.com.au" style="color:#5dcc00;text-decoration:none;">imvio.com.au</a>
+                &nbsp;·&nbsp; support@imvio.com.au
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
